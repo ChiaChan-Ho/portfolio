@@ -102,19 +102,19 @@ export default function PersonalWebsite() {
         }
       }
       .animate-slide-bottom {
-        animation: slideBottom 1s ease forwards;
+        animation: slideBottom 0.75s ease forwards;
       }
       .animate-slide-right {
-        animation: slideRight 1s ease forwards;
+        animation: slideRight 0.75s ease forwards;
       }
       .animate-slide-left {
-        animation: slideLeft 1s ease forwards;
+        animation: slideLeft 0.75s ease forwards;
       }
       .fade-in {
-        animation: fadeIn 0.5s ease forwards;
+        animation: fadeIn 1.5s ease forwards;
       }
       .fade-out {
-        animation: fadeOut 0.3s ease forwards;
+        animation: fadeOut 0.1s ease forwards;
       }
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
