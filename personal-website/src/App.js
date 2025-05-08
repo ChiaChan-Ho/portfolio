@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Github, Linkedin, Mail, FileText, ExternalLink, Moon, Sun, ChevronRight } from "lucide-react";
 
 export default function PersonalWebsite() {
@@ -7,8 +7,28 @@ export default function PersonalWebsite() {
   const [isPageChanging, setIsPageChanging] = useState(false);
   const [pageAnimation, setPageAnimation] = useState("fade-in");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [counters, setCounters] = useState({
+    projects: 0,
+    students: 0,
+    skills: 0
+  });
+  const [skillLevels, setSkillLevels] = useState({
+    python: 0,
+    java: 0,
+    sql: 0,
+    javascript: 0,
+    cpp: 0,
+    html: 0,
+    matlab: 0,
+    css: 0
+  });
+  const [textAnimation, setTextAnimation] = useState({
+    name: false,
+    subtitle: false,
+    numbers: false
+  });
   
-  const skillLevels = {
+  const targetSkillLevels = {
     python: 95,
     java: 80,
     sql: 70,
@@ -17,6 +37,12 @@ export default function PersonalWebsite() {
     html: 50,
     matlab: 50,
     css: 50
+  };
+
+  const targetCounters = {
+    projects: 3,
+    students: 2000,
+    skills: 10
   };
 
   const toggleDarkMode = () => {
@@ -45,6 +71,45 @@ export default function PersonalWebsite() {
     // Add CSS for transitions to the document head
     const style = document.createElement('style');
     style.innerHTML = `
+      @keyframes slideBottom {
+        0% {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideRight {
+        0% {
+          transform: translateX(-100px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideLeft {
+        0% {
+          transform: translateX(100px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .animate-slide-bottom {
+        animation: slideBottom 1s ease forwards;
+      }
+      .animate-slide-right {
+        animation: slideRight 1s ease forwards;
+      }
+      .animate-slide-left {
+        animation: slideLeft 1s ease forwards;
+      }
       .fade-in {
         animation: fadeIn 0.5s ease forwards;
       }
@@ -75,6 +140,92 @@ export default function PersonalWebsite() {
       document.head.removeChild(style);
     };
   }, []);
+
+  // Animation for numbers
+  useEffect(() => {
+    if (currentPage === 'home') {
+      const duration = 1300; // 1.3 seconds
+      const steps = 60; // 60 steps for smooth animation
+      const interval = duration / steps;
+      let animationTimer = null;
+
+      // Show all elements immediately
+      setTextAnimation({
+        name: true,
+        subtitle: true,
+        numbers: true
+      });
+
+      const animateCounters = () => {
+        let step = 0;
+        animationTimer = setInterval(() => {
+          step++;
+          const progress = step / steps;
+          
+          setCounters({
+            projects: Math.floor(targetCounters.projects * progress),
+            students: Math.floor(targetCounters.students * progress),
+            skills: Math.floor(targetCounters.skills * progress)
+          });
+
+          if (step === steps) {
+            clearInterval(animationTimer);
+          }
+        }, interval);
+      };
+
+      // Start number animation immediately
+      animateCounters();
+
+      // Cleanup timer
+      return () => {
+        if (animationTimer) {
+          clearInterval(animationTimer);
+        }
+      };
+    } else {
+      // Reset animations when leaving home page
+      setTextAnimation({
+        name: false,
+        subtitle: false,
+        numbers: false
+      });
+    }
+  }, [currentPage]);
+
+  // Animation for skill bars
+  useEffect(() => {
+    if (currentPage === 'about') {
+      const duration = 2000; // 2 seconds
+      const steps = 60; // 60 steps for smooth animation
+      const interval = duration / steps;
+
+      const animateSkills = () => {
+        let step = 0;
+        const timer = setInterval(() => {
+          step++;
+          const progress = step / steps;
+          
+          setSkillLevels({
+            python: Math.floor(targetSkillLevels.python * progress),
+            java: Math.floor(targetSkillLevels.java * progress),
+            sql: Math.floor(targetSkillLevels.sql * progress),
+            javascript: Math.floor(targetSkillLevels.javascript * progress),
+            cpp: Math.floor(targetSkillLevels.cpp * progress),
+            html: Math.floor(targetSkillLevels.html * progress),
+            matlab: Math.floor(targetSkillLevels.matlab * progress),
+            css: Math.floor(targetSkillLevels.css * progress)
+          });
+
+          if (step === steps) {
+            clearInterval(timer);
+          }
+        }, interval);
+      };
+
+      animateSkills();
+    }
+  }, [currentPage]);
 
   // Resume data
   const personalInfo = {
@@ -298,13 +449,14 @@ export default function PersonalWebsite() {
               <button 
                 key={item.id}
                 onClick={() => navigateTo(item.id)}
-                className={`px-3 py-2 rounded-md transition-all duration-300 ${
+                className={`px-3 py-2 rounded-md transition-all duration-300 relative group ${
                   currentPage === item.id 
-                    ? `${darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'} tab-active transform scale-105` 
+                    ? `${darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'} tab-active` 
                     : `${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} tab-inactive`
                 }`}
               >
                 {item.label}
+                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-blue-500 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100`}></span>
               </button>
             ))}
             <button 
@@ -372,29 +524,41 @@ export default function PersonalWebsite() {
       <div className="container mx-auto max-w-5xl pt-24 sm:pt-32 pb-8 sm:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 items-center mb-8 sm:mb-36">
           <div className="order-2 md:order-1 text-center md:text-left">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-6">{personalInfo.name}</h1>
-            <h2 className="text-base sm:text-2xl text-blue-600 dark:text-blue-400 mb-4 sm:mb-8">Data Science & Software System</h2>
+            <h1 className={`text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-6 ${
+              textAnimation.name ? 'animate-slide-bottom' : 'opacity-0'
+            }`}>
+              {personalInfo.name}
+            </h1>
+            <h2 className={`text-base sm:text-2xl text-blue-600 dark:text-blue-400 mb-4 sm:mb-8 ${
+              textAnimation.subtitle ? 'animate-slide-bottom' : 'opacity-0'
+            }`}>
+              Data Science & Software Systems
+            </h2>
             
-            <div className="flex justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-8">
+            <div className={`flex justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-8 ${
+              textAnimation.subtitle ? 'animate-slide-bottom' : 'opacity-0'
+            }`}>
               <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" 
-                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white transition-all duration-300 hover:scale-110`}
                 aria-label="LinkedIn">
                 <Linkedin size={16} className="sm:w-5 sm:h-5" />
               </a>
               <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" 
-                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-800 hover:bg-gray-900'} text-white`}
+                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-800 hover:bg-gray-900'} text-white transition-all duration-300 hover:scale-110`}
                 aria-label="GitHub">
                 <Github size={16} className="sm:w-5 sm:h-5" />
               </a>
               <a href={`mailto:${personalInfo.email}`} 
-                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white`}
+                className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white transition-all duration-300 hover:scale-110`}
                 aria-label="Email">
                 <Mail size={16} className="sm:w-5 sm:h-5" />
               </a>
             </div>
           </div>
           
-          <div className="flex justify-center order-1 md:order-2 mb-6 md:mb-0">
+          <div className={`flex justify-center order-1 md:order-2 mb-6 md:mb-0 ${
+            textAnimation.name ? 'animate-slide-left' : 'opacity-0'
+          }`}>
             <div className="w-24 h-24 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 border-blue-500">
               <img src={`${process.env.PUBLIC_URL}/Bigger size.jpg`} alt="Profile" className="w-full h-full object-cover" />
             </div>
@@ -402,28 +566,32 @@ export default function PersonalWebsite() {
         </div>
         
         {/* Achievement Highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
-            <div className="text-lg sm:text-3xl font-bold text-blue-500 mb-1 sm:mb-2">3+</div>
+        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6 ${
+          textAnimation.numbers ? 'animate-slide-bottom' : 'opacity-0'
+        }`}>
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}> 
+            <div className="text-lg sm:text-3xl font-bold text-blue-500 mb-1 sm:mb-2">{counters.projects}+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Projects Completed</h3>
             <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Data science and ML projects</p>
           </div>
           
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
-            <div className="text-lg sm:text-3xl font-bold text-green-500 mb-1 sm:mb-2">2000+</div>
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}> 
+            <div className="text-lg sm:text-3xl font-bold text-green-500 mb-1 sm:mb-2">{counters.students}+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Students Tutored</h3>
             <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Across multiple programming courses</p>
           </div>
           
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
-            <div className="text-lg sm:text-3xl font-bold text-purple-500 mb-1 sm:mb-2">10+</div>
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}> 
+            <div className="text-lg sm:text-3xl font-bold text-purple-500 mb-1 sm:mb-2">{counters.skills}+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Technical Skills</h3>
             <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Programming languages and tools</p>
           </div>
         </div>
         
         {/* Learn More Button */}
-        <div className="flex justify-center mt-6 sm:mt-12 mb-0">
+        <div className={`flex justify-center mt-6 sm:mt-12 mb-0 ${
+          textAnimation.numbers ? 'animate-slide-bottom' : 'opacity-0'
+        }`}>
           <button 
             onClick={() => navigateTo('about')} 
             className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
@@ -441,7 +609,7 @@ export default function PersonalWebsite() {
       <div className="container mx-auto max-w-4xl pb-20">
         <h2 className="text-3xl font-bold mb-12 text-center">About Me</h2>
         
-        <div className={`p-6 rounded-lg mb-12 ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
+        <div className={`p-6 rounded-lg mb-12 ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
           <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Professional Profile</h3>
           <p className="text-lg whitespace-pre-line mb-6">
             {aboutMe.coverLetter}
@@ -449,7 +617,7 @@ export default function PersonalWebsite() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
+          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Research Interests</h3>
             <ul className="space-y-2">
               {aboutMe.researchInterests.map((interest, index) => (
@@ -461,7 +629,7 @@ export default function PersonalWebsite() {
             </ul>
           </div>
           
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
+          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Career Goals</h3>
             <ul className="space-y-2">
               {aboutMe.careerGoals.map((goal, index) => (
@@ -474,20 +642,20 @@ export default function PersonalWebsite() {
           </div>
         </div>
         
-        <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
+        <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
           <h3 className="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">Skills Proficiency</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
             <div>
-              <SkillBar skill="Python" level={skillLevels.python} />
-              <SkillBar skill="Java" level={skillLevels.java} />
-              <SkillBar skill="SQL" level={skillLevels.sql} />
-              <SkillBar skill="JavaScript" level={skillLevels.javascript} />
+              <SkillBar skill="Python" level={95} />
+              <SkillBar skill="Java" level={80} />
+              <SkillBar skill="SQL" level={70} />
+              <SkillBar skill="JavaScript" level={70} />
             </div>
             <div>
-              <SkillBar skill="C++" level={skillLevels.cpp} />
-              <SkillBar skill="HTML" level={skillLevels.html} />
-              <SkillBar skill="MATLAB" level={skillLevels.matlab} />
-              <SkillBar skill="CSS" level={skillLevels.css} />
+              <SkillBar skill="C++" level={50} />
+              <SkillBar skill="HTML" level={50} />
+              <SkillBar skill="MATLAB" level={50} />
+              <SkillBar skill="CSS" level={50} />
             </div>
           </div>
         </div>
@@ -511,7 +679,7 @@ export default function PersonalWebsite() {
         <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">My Projects</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {experiences.map((exp, index) => (
-            <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-md flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer`}
+            <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-md flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer`}
                  onClick={() => window.open(exp.link, '_blank')}>
               <img src={exp.image} alt={exp.title} className="w-full h-48 sm:h-56 object-cover rounded-t-xl" />
               <div className="flex flex-col flex-1 p-4 sm:p-8">
@@ -715,7 +883,7 @@ export default function PersonalWebsite() {
         <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">Teaching Experience</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-10">
           {/* DSC 10 Card */}
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
             <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Principles of Data Science (DSC 10)</h3>
             <div className={`mb-2 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Students Tutored</div>
             <div className="text-blue-600 text-xl sm:text-2xl font-bold mb-6 sm:mb-8">1000+</div>
@@ -735,7 +903,7 @@ export default function PersonalWebsite() {
             </ul>
           </div>
           {/* DSC 20 Card */}
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
             <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Programming and Data Structures (DSC 20)</h3>
             <div className={`mb-2 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Students Tutored</div>
             <div className="text-blue-600 text-xl sm:text-2xl font-bold mb-6 sm:mb-8">100+</div>
@@ -776,21 +944,21 @@ export default function PersonalWebsite() {
         <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-10 text-center">Feel free to reach out for opportunities, collaborations, or just to connect!</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {/* First row: Contact Info */}
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className="flex items-center mb-2">
               <Mail className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
               <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email</span>
             </div>
             <a href={`mailto:${personalInfo.email}`} className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{personalInfo.email}</a>
           </div>
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className="flex items-center mb-2">
               <Linkedin className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
               <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>LinkedIn</span>
             </div>
             <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>/{personalInfo.linkedin.replace('www.linkedin.com/in/', '')}</a>
           </div>
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className="flex items-center mb-2">
               <Github className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
               <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>GitHub</span>
@@ -798,7 +966,7 @@ export default function PersonalWebsite() {
             <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>/{personalInfo.github.replace('github.com/', '')}</a>
           </div>
           {/* Second row: Open To, Job Areas, Research Areas */}
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Currently Open To</div>
             <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Full-time positions</li>
@@ -806,7 +974,7 @@ export default function PersonalWebsite() {
               <li>Research lab positions</li>
             </ul>
           </div>
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Areas</div>
             <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Software Development</li>
@@ -815,7 +983,7 @@ export default function PersonalWebsite() {
               <li>Systems Engineering</li>
             </ul>
           </div>
-          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
             <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Research Areas</div>
             <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Computer Science</li>
