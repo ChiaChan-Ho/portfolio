@@ -6,6 +6,7 @@ export default function PersonalWebsite() {
   const [currentPage, setCurrentPage] = useState("home");
   const [isPageChanging, setIsPageChanging] = useState(false);
   const [pageAnimation, setPageAnimation] = useState("fade-in");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const skillLevels = {
     python: 95,
@@ -120,7 +121,7 @@ export default function PersonalWebsite() {
         "Published a comprehensive report detailing findings, methodologies, and insights on the project's website."
       ],
       tech: ["Python", "Pandas", "Scikit-learn"],
-      image: "/lol_project.png",
+      image: `${process.env.PUBLIC_URL}/lol_project.png`,
       link: "https://chiachan-ho.github.io/LPL-vs-LCK/"
     },
     {
@@ -137,7 +138,7 @@ export default function PersonalWebsite() {
         "Developed comprehensive solutions and explanations for past exam questions, enhancing the website's value as a study tool by providing students with clear guidance and insights for self-assessment."
       ],
       tech: ["Python", "GitHub", "Markdown"],
-      image: "/practice_project.png",
+      image: `${process.env.PUBLIC_URL}/practice_project.png`,
       link: "https://practice.dsc10.com/"
     },
     {
@@ -153,7 +154,7 @@ export default function PersonalWebsite() {
         "Developed and updated content of BabyPandas Function, including planning the documentation structure, writing and updating the content, and publishing the documentation."
       ],
       tech: ["Python", "Github"],
-      image: "/babypandas_project.png",
+      image: `${process.env.PUBLIC_URL}/babypandas_project.png`,
       link: "https://dsc-courses.github.io/bpd-reference/docs/documentation/Functions/Writing%20Functions"
     }
   ];
@@ -272,12 +273,27 @@ export default function PersonalWebsite() {
   // Header component with tabs
   const Header = () => (
     <header className={`fixed w-full z-10 ${darkMode ? 'bg-gray-800' : 'bg-white shadow-md'} transition-colors duration-300`}>
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex justify-between items-center">
-          <div className="text-xl font-bold">{personalInfo.name}</div>
+          <div className="text-lg sm:text-xl font-bold">{personalInfo.name}</div>
           
-          {/* Navigation Tabs */}
-          <div className="flex items-center space-x-4">
+          {/* Mobile Menu Button */}
+          <div className="sm:hidden flex items-center">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`p-2 rounded-md ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors duration-300`}
+              aria-label="Toggle menu"
+            >
+              <div className="w-6 h-5 relative flex flex-col justify-between">
+                <span className={`w-full h-0.5 ${darkMode ? 'bg-white' : 'bg-gray-900'} transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                <span className={`w-full h-0.5 ${darkMode ? 'bg-white' : 'bg-gray-900'} transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`w-full h-0.5 ${darkMode ? 'bg-white' : 'bg-gray-900'} transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+              </div>
+            </button>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden sm:flex items-center space-x-4">
             {navItems.map((item) => (
               <button 
                 key={item.id}
@@ -299,6 +315,44 @@ export default function PersonalWebsite() {
             </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Dropdown */}
+        <div className={`sm:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} mt-2 py-2 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg`}>
+          {navItems.map((item) => (
+            <button 
+              key={item.id}
+              onClick={() => {
+                navigateTo(item.id);
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors duration-300 ${
+                currentPage === item.id 
+                  ? `${darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}` 
+                  : `${darkMode ? 'text-gray-300' : 'text-gray-900'}`
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+          <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
+            <button 
+              onClick={toggleDarkMode} 
+              className="w-full text-left px-4 py-2 flex items-center gap-2"
+            >
+              {darkMode ? (
+                <>
+                  <Sun size={18} />
+                  <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={18} />
+                  <span>Dark Mode</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </header>
   );
@@ -315,8 +369,8 @@ export default function PersonalWebsite() {
   // Home page
   const HomePage = () => (
     <section className={`min-h-screen px-2 sm:px-6 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
-      <div className="container mx-auto max-w-5xl pt-16 sm:pt-32 pb-8 sm:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 items-center mb-16 sm:mb-36">
+      <div className="container mx-auto max-w-5xl pt-24 sm:pt-32 pb-8 sm:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 items-center mb-8 sm:mb-36">
           <div className="order-2 md:order-1 text-center md:text-left">
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-6">{personalInfo.name}</h1>
             <h2 className="text-base sm:text-2xl text-blue-600 dark:text-blue-400 mb-4 sm:mb-8">Data Science & Software System</h2>
@@ -325,23 +379,23 @@ export default function PersonalWebsite() {
               <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" 
                 className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
                 aria-label="LinkedIn">
-                <Linkedin size={18} />
+                <Linkedin size={16} className="sm:w-5 sm:h-5" />
               </a>
               <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" 
                 className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-800 hover:bg-gray-900'} text-white`}
                 aria-label="GitHub">
-                <Github size={18} />
+                <Github size={16} className="sm:w-5 sm:h-5" />
               </a>
               <a href={`mailto:${personalInfo.email}`} 
                 className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white`}
                 aria-label="Email">
-                <Mail size={18} />
+                <Mail size={16} className="sm:w-5 sm:h-5" />
               </a>
             </div>
           </div>
           
           <div className="flex justify-center order-1 md:order-2 mb-6 md:mb-0">
-            <div className="w-28 h-28 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 border-blue-500">
+            <div className="w-24 h-24 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 border-blue-500">
               <img src={`${process.env.PUBLIC_URL}/Bigger size.jpg`} alt="Profile" className="w-full h-full object-cover" />
             </div>
           </div>
@@ -349,32 +403,32 @@ export default function PersonalWebsite() {
         
         {/* Achievement Highlights */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-transform hover:scale-105`}> 
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
             <div className="text-lg sm:text-3xl font-bold text-blue-500 mb-1 sm:mb-2">3+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Projects Completed</h3>
-            <p className="!text-black !dark:text-white text-xs sm:text-base font-medium">Data science and ML projects</p>
+            <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Data science and ML projects</p>
           </div>
           
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-transform hover:scale-105`}> 
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
             <div className="text-lg sm:text-3xl font-bold text-green-500 mb-1 sm:mb-2">2000+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Students Tutored</h3>
-            <p className="!text-black !dark:text-white text-xs sm:text-base font-medium">Across multiple programming courses</p>
+            <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Across multiple programming courses</p>
           </div>
           
-          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-transform hover:scale-105`}> 
+          <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}> 
             <div className="text-lg sm:text-3xl font-bold text-purple-500 mb-1 sm:mb-2">10+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Technical Skills</h3>
-            <p className="!text-black !dark:text-white text-xs sm:text-base font-medium">Programming languages and tools</p>
+            <p className={`text-xs sm:text-base font-medium ${darkMode ? 'text-gray-300' : 'text-black'}`}>Programming languages and tools</p>
           </div>
         </div>
         
-        {/* Learn More Button - Centered at bottom with less space */}
+        {/* Learn More Button */}
         <div className="flex justify-center mt-6 sm:mt-12 mb-0">
           <button 
             onClick={() => navigateTo('about')} 
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white`}
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
           >
-            Learn More About Me <ChevronRight size={18} />
+            Learn More About Me <ChevronRight size={16} className="sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -383,19 +437,19 @@ export default function PersonalWebsite() {
 
   // About Me page
   const AboutPage = () => (
-    <section className={`min-h-screen px-2 sm:px-6 pt-16 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto max-w-4xl pb-20">
         <h2 className="text-3xl font-bold mb-12 text-center">About Me</h2>
         
-        <div className={`p-6 rounded-lg mb-12 ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'}`}>
+        <div className={`p-6 rounded-lg mb-12 ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
           <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Professional Profile</h3>
           <p className="text-lg whitespace-pre-line mb-6">
-            Master's student at the University of Pennsylvania studying Systems Engineering, with a strong foundation in Data Science and International Business from my undergraduate studies at UC San Diego. I'm passionate about software development, AI, and machine learning, and I strive to apply these technologies to solve real-world engineering and commercial challenges.
+            {aboutMe.coverLetter}
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'}`}>
+          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
             <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Research Interests</h3>
             <ul className="space-y-2">
               {aboutMe.researchInterests.map((interest, index) => (
@@ -407,7 +461,7 @@ export default function PersonalWebsite() {
             </ul>
           </div>
           
-          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'}`}>
+          <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
             <h3 className="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Career Goals</h3>
             <ul className="space-y-2">
               {aboutMe.careerGoals.map((goal, index) => (
@@ -420,7 +474,7 @@ export default function PersonalWebsite() {
           </div>
         </div>
         
-        <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'}`}>
+        <div className={`p-6 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'} transform transition-all duration-300 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600`}>
           <h3 className="text-2xl font-bold mb-6 text-blue-600 dark:text-blue-400">Skills Proficiency</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
             <div>
@@ -441,9 +495,9 @@ export default function PersonalWebsite() {
         <div className="mt-12 flex justify-center">
           <button 
             onClick={() => navigateTo('projects')} 
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
           >
-            View My Projects <ChevronRight size={20} />
+            View My Projects <ChevronRight size={20} className="sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -452,25 +506,34 @@ export default function PersonalWebsite() {
 
   // Projects page
   const ProjectsPage = () => (
-    <section className={`min-h-screen px-2 sm:px-6 pt-16 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto max-w-6xl pb-20">
-        <h2 className="text-3xl font-bold mb-12 text-center">My Projects</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">My Projects</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {experiences.map((exp, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-md flex flex-col h-full">
-              <img src={exp.image} alt={exp.title} className="w-full h-56 object-cover rounded-t-xl" />
-              <div className="flex flex-col flex-1 p-8">
-                <h3 className="text-xl font-bold mb-4">{exp.title}</h3>
-                <p className="text-gray-600 text-base mb-4">{exp.description[0]}</p>
+            <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-md flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer`}
+                 onClick={() => window.open(exp.link, '_blank')}>
+              <img src={exp.image} alt={exp.title} className="w-full h-48 sm:h-56 object-cover rounded-t-xl" />
+              <div className="flex flex-col flex-1 p-4 sm:p-8">
+                <h3 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{exp.title}</h3>
+                <p className={`text-sm sm:text-base mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{exp.description[0]}</p>
                 <div className="flex-1"></div>
-                <div className="text-gray-400 text-base mb-6">Tech: {exp.tech.join(", ")}</div>
-                <a href={exp.link} target="_blank" rel="noopener noreferrer"
-                  className="w-full inline-block text-center px-6 py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white text-lg transition">
+                <div className={`text-sm sm:text-base mb-4 sm:mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`}>Tech: {exp.tech.join(", ")}</div>
+                <div className="w-full inline-block text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg transition">
                   View Project
-                </a>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 sm:mt-12 flex justify-center">
+          <button 
+            onClick={() => navigateTo('resume')} 
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
+          >
+            View My Resume <ChevronRight size={16} className="sm:w-5 sm:h-5" />
+          </button>
         </div>
       </div>
     </section>
@@ -478,7 +541,7 @@ export default function PersonalWebsite() {
 
   // Resume page
   const ResumePage = () => (
-    <section className={`min-h-screen px-2 sm:px-6 pt-16 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto max-w-4xl pb-20">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <h2 className="text-3xl font-bold">My Resume</h2>
@@ -647,24 +710,24 @@ export default function PersonalWebsite() {
 
   // Teaching page
   const TeachingPage = () => (
-    <section className={`min-h-screen px-2 sm:px-6 pt-16 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto max-w-6xl pb-20">
-        <h2 className="text-3xl font-bold mb-12 text-center">Teaching Experience</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">Teaching Experience</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-10">
           {/* DSC 10 Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col">
-            <h3 className="text-2xl font-bold mb-4">Principles of Data Science (DSC 10)</h3>
-            <div className="mb-2 text-gray-500 font-medium">Students Tutored</div>
-            <div className="text-blue-600 text-2xl font-bold mb-8">1000+</div>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-100 dark:hover:bg-gray-700`}>
+            <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Principles of Data Science (DSC 10)</h3>
+            <div className={`mb-2 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Students Tutored</div>
+            <div className="text-blue-600 text-xl sm:text-2xl font-bold mb-6 sm:mb-8">1000+</div>
             <div className="flex items-center mb-2">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg mr-3">3</div>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-base sm:text-lg mr-3">3</div>
               <div>
-                <div className="text-gray-500 font-medium">Academic Terms</div>
-                <div className="font-bold">Fall 2023, Winter 2024, Spring 2024</div>
+                <div className={`text-sm sm:text-base font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Academic Terms</div>
+                <div className={`font-bold text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>Fall 2023, Winter 2024, Spring 2024</div>
               </div>
             </div>
-            <div className="mt-4 text-gray-500 font-medium">Responsibilities</div>
-            <ul className="list-disc pl-6 mt-2 text-gray-700">
+            <div className={`mt-4 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Responsibilities</div>
+            <ul className={`list-disc pl-6 mt-2 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Hosted office hours</li>
               <li>Created exams and quizzes</li>
               <li>Graded assignments and exams</li>
@@ -672,19 +735,19 @@ export default function PersonalWebsite() {
             </ul>
           </div>
           {/* DSC 20 Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col">
-            <h3 className="text-2xl font-bold mb-4">Programming and Data Structures (DSC 20)</h3>
-            <div className="mb-2 text-gray-500 font-medium">Students Tutored</div>
-            <div className="text-blue-600 text-2xl font-bold mb-8">100+</div>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-100 dark:hover:bg-gray-700`}>
+            <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Programming and Data Structures (DSC 20)</h3>
+            <div className={`mb-2 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Students Tutored</div>
+            <div className="text-blue-600 text-xl sm:text-2xl font-bold mb-6 sm:mb-8">100+</div>
             <div className="flex items-center mb-2">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg mr-3">1</div>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-base sm:text-lg mr-3">1</div>
               <div>
-                <div className="text-gray-500 font-medium">Academic Terms</div>
-                <div className="font-bold">Summer 2024</div>
+                <div className={`text-sm sm:text-base font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Academic Terms</div>
+                <div className={`font-bold text-sm sm:text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>Summer 2024</div>
               </div>
             </div>
-            <div className="mt-4 text-gray-500 font-medium">Responsibilities</div>
-            <ul className="list-disc pl-6 mt-2 text-gray-700">
+            <div className={`mt-4 font-medium text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Responsibilities</div>
+            <ul className={`list-disc pl-6 mt-2 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Hosted office hours</li>
               <li>Created exams and quizzes</li>
               <li>Graded assignments and exams</li>
@@ -692,60 +755,69 @@ export default function PersonalWebsite() {
             </ul>
           </div>
         </div>
+
+        <div className="mt-8 sm:mt-12 flex justify-center">
+          <button 
+            onClick={() => navigateTo('contact')} 
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white`}
+          >
+            Contact Me <ChevronRight size={16} className="sm:w-5 sm:h-5" />
+          </button>
+        </div>
       </div>
     </section>
   );
 
   // Contact page
   const ContactPage = () => (
-    <section className={`min-h-screen px-2 sm:px-6 pt-16 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto max-w-5xl pb-20">
-        <h2 className="text-3xl font-bold mb-2 text-center">Contact</h2>
-        <p className="text-lg text-gray-600 mb-10 text-center">Feel free to reach out for opportunities, collaborations, or just to connect!</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center">Contact</h2>
+        <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-10 text-center">Feel free to reach out for opportunities, collaborations, or just to connect!</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {/* First row: Contact Info */}
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[120px] justify-center">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
             <div className="flex items-center mb-2">
-              <Mail className="mr-2 text-blue-500" size={22} />
-              <span className="font-bold text-lg">Email</span>
+              <Mail className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
+              <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email</span>
             </div>
-            <a href={`mailto:${personalInfo.email}`} className="text-gray-600 text-lg hover:underline break-all">{personalInfo.email}</a>
+            <a href={`mailto:${personalInfo.email}`} className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{personalInfo.email}</a>
           </div>
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[120px] justify-center">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
             <div className="flex items-center mb-2">
-              <Linkedin className="mr-2 text-blue-500" size={22} />
-              <span className="font-bold text-lg">LinkedIn</span>
+              <Linkedin className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
+              <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>LinkedIn</span>
             </div>
-            <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 text-lg hover:underline break-all">/{personalInfo.linkedin.replace('www.linkedin.com/in/', '')}</a>
+            <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>/{personalInfo.linkedin.replace('www.linkedin.com/in/', '')}</a>
           </div>
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[120px] justify-center">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[100px] sm:min-h-[120px] justify-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
             <div className="flex items-center mb-2">
-              <Github className="mr-2 text-blue-500" size={22} />
-              <span className="font-bold text-lg">GitHub</span>
+              <Github className="mr-2 text-blue-500 w-5 h-5 sm:w-6 sm:h-6" />
+              <span className={`font-bold text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>GitHub</span>
             </div>
-            <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 text-lg hover:underline break-all">/{personalInfo.github.replace('github.com/', '')}</a>
+            <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" className={`text-sm sm:text-lg hover:underline break-all ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>/{personalInfo.github.replace('github.com/', '')}</a>
           </div>
           {/* Second row: Open To, Job Areas, Research Areas */}
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[200px]">
-            <div className="font-bold text-lg mb-2">Currently Open To</div>
-            <ul className="list-disc pl-6 text-gray-700 text-base">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+            <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Currently Open To</div>
+            <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Full-time positions</li>
               <li>Internship opportunities</li>
               <li>Research lab positions</li>
             </ul>
           </div>
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[200px]">
-            <div className="font-bold text-lg mb-2">Job Areas</div>
-            <ul className="list-disc pl-6 text-gray-700 text-base">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+            <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Areas</div>
+            <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Software Development</li>
               <li>Data Science</li>
               <li>Machine Learning</li>
               <li>Systems Engineering</li>
             </ul>
           </div>
-          <div className="bg-white rounded-xl shadow flex flex-col items-start p-6 min-h-[200px]">
-            <div className="font-bold text-lg mb-2">Research Areas</div>
-            <ul className="list-disc pl-6 text-gray-700 text-base">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow flex flex-col items-start p-4 sm:p-6 min-h-[180px] sm:min-h-[200px] transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700`}>
+            <div className={`font-bold text-base sm:text-lg mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Research Areas</div>
+            <ul className={`list-disc pl-6 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <li>Computer Science</li>
               <li>Data Science</li>
               <li>Machine Learning</li>
