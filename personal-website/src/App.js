@@ -479,9 +479,9 @@ export default function PersonalWebsite() {
         <div className="flex justify-center mt-6 sm:mt-12 mb-0">
           <button 
             onClick={() => navigateTo('about')} 
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
           >
-            Learn More About Me <ChevronRight size={16} className="sm:w-5 sm:h-5" />
+            Learn More About Me <ChevronRight size={20} className="sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
