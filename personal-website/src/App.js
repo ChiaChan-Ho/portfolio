@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Github, Linkedin, Mail, FileText, ExternalLink, Moon, Sun, ChevronRight } from "lucide-react";
+import { animateValues } from "./animationUtils";
+import "./animations.css"; // Import the animations CSS file
 
 export default function PersonalWebsite() {
   const [darkMode, setDarkMode] = useState(false);
@@ -22,11 +24,10 @@ export default function PersonalWebsite() {
     matlab: 0,
     css: 0
   });
-  const [textAnimation, setTextAnimation] = useState({
-    name: false,
-    subtitle: false,
-    numbers: false
-  });
+  
+  // References to store animation cancellation functions
+  const counterAnimationRef = useRef(null);
+  const skillAnimationRef = useRef(null);
   
   const targetSkillLevels = {
     python: 95,
@@ -66,164 +67,60 @@ export default function PersonalWebsite() {
     }, 300);
   };
 
-  // Add transition styles at the top level
-  useEffect(() => {
-    // Add CSS for transitions to the document head
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes slideBottom {
-        0% {
-          transform: translateY(100px);
-          opacity: 0;
-        }
-        100% {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-      @keyframes slideRight {
-        0% {
-          transform: translateX(-100px);
-          opacity: 0;
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      @keyframes slideLeft {
-        0% {
-          transform: translateX(100px);
-          opacity: 0;
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      .animate-slide-bottom {
-        animation: slideBottom 0.75s ease forwards;
-      }
-      .animate-slide-right {
-        animation: slideRight 0.75s ease forwards;
-      }
-      .animate-slide-left {
-        animation: slideLeft 0.75s ease forwards;
-      }
-      .fade-in {
-        animation: fadeIn 1.5s ease forwards;
-      }
-      .fade-out {
-        animation: fadeOut 0.1s ease forwards;
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes fadeOut {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(-20px); }
-      }
-      .page-transition {
-        transition: all 0.5s ease;
-      }
-      .tab-active {
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      .tab-inactive {
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
   // Animation for numbers
   useEffect(() => {
-    if (currentPage === 'home') {
-      const duration = 1300; // 1.3 seconds
-      const steps = 60; // 60 steps for smooth animation
-      const interval = duration / steps;
-      let animationTimer = null;
+    if (currentPage === 'home' && !isPageChanging) {
+      // Animate counters with the utility function
+      if (counterAnimationRef.current) {
+        counterAnimationRef.current(); // Cancel any existing animation
+      }
+      
+      counterAnimationRef.current = animateValues(
+        targetCounters,
+        1300, // 1.3 seconds duration
+        (updatedCounters) => {
+          setCounters(updatedCounters);
+        }
+      );
 
-      // Show all elements immediately
-      setTextAnimation({
-        name: true,
-        subtitle: true,
-        numbers: true
-      });
-
-      const animateCounters = () => {
-        let step = 0;
-        animationTimer = setInterval(() => {
-          step++;
-          const progress = step / steps;
-          
-          setCounters({
-            projects: Math.floor(targetCounters.projects * progress),
-            students: Math.floor(targetCounters.students * progress),
-            skills: Math.floor(targetCounters.skills * progress)
-          });
-
-          if (step === steps) {
-            clearInterval(animationTimer);
-          }
-        }, interval);
-      };
-
-      // Start number animation immediately
-      animateCounters();
-
-      // Cleanup timer
+      // Cleanup animation when component unmounts or page changes
       return () => {
-        if (animationTimer) {
-          clearInterval(animationTimer);
+        if (counterAnimationRef.current) {
+          counterAnimationRef.current();
         }
       };
-    } else {
-      // Reset animations when leaving home page
-      setTextAnimation({
-        name: false,
-        subtitle: false,
-        numbers: false
+    } else if (currentPage !== 'home') {
+      // Reset counters
+      setCounters({
+        projects: 0,
+        students: 0,
+        skills: 0
       });
     }
-  }, [currentPage]);
+  }, [currentPage, isPageChanging]);
 
   // Animation for skill bars
   useEffect(() => {
     if (currentPage === 'about') {
-      const duration = 2000; // 2 seconds
-      const steps = 60; // 60 steps for smooth animation
-      const interval = duration / steps;
+      // Animate skill bars with the utility function
+      if (skillAnimationRef.current) {
+        skillAnimationRef.current(); // Cancel any existing animation
+      }
+      
+      skillAnimationRef.current = animateValues(
+        targetSkillLevels,
+        2000, // 2 seconds duration
+        (updatedSkillLevels) => {
+          setSkillLevels(updatedSkillLevels);
+        }
+      );
 
-      const animateSkills = () => {
-        let step = 0;
-        const timer = setInterval(() => {
-          step++;
-          const progress = step / steps;
-          
-          setSkillLevels({
-            python: Math.floor(targetSkillLevels.python * progress),
-            java: Math.floor(targetSkillLevels.java * progress),
-            sql: Math.floor(targetSkillLevels.sql * progress),
-            javascript: Math.floor(targetSkillLevels.javascript * progress),
-            cpp: Math.floor(targetSkillLevels.cpp * progress),
-            html: Math.floor(targetSkillLevels.html * progress),
-            matlab: Math.floor(targetSkillLevels.matlab * progress),
-            css: Math.floor(targetSkillLevels.css * progress)
-          });
-
-          if (step === steps) {
-            clearInterval(timer);
-          }
-        }, interval);
+      // Cleanup animation when component unmounts or page changes
+      return () => {
+        if (skillAnimationRef.current) {
+          skillAnimationRef.current();
+        }
       };
-
-      animateSkills();
     }
   }, [currentPage]);
 
@@ -524,20 +421,14 @@ export default function PersonalWebsite() {
       <div className="container mx-auto max-w-5xl pt-24 sm:pt-32 pb-8 sm:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 items-center mb-8 sm:mb-36">
           <div className="order-2 md:order-1 text-center md:text-left">
-            <h1 className={`text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-6 ${
-              textAnimation.name ? 'animate-slide-bottom' : 'opacity-0'
-            }`}>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-6">
               {personalInfo.name}
             </h1>
-            <h2 className={`text-base sm:text-2xl text-blue-600 dark:text-blue-400 mb-4 sm:mb-8 ${
-              textAnimation.subtitle ? 'animate-slide-bottom' : 'opacity-0'
-            }`}>
+            <h2 className="text-base sm:text-2xl text-blue-600 dark:text-blue-400 mb-4 sm:mb-8">
               Data Science & Software Systems
             </h2>
             
-            <div className={`flex justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-8 ${
-              textAnimation.subtitle ? 'animate-slide-bottom' : 'opacity-0'
-            }`}>
+            <div className="flex justify-center md:justify-start gap-2 sm:gap-3 mt-4 sm:mt-8">
               <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" 
                 className={`p-2 sm:p-3 rounded-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white transition-all duration-300 hover:scale-110`}
                 aria-label="LinkedIn">
@@ -556,9 +447,7 @@ export default function PersonalWebsite() {
             </div>
           </div>
           
-          <div className={`flex justify-center order-1 md:order-2 mb-6 md:mb-0 ${
-            textAnimation.name ? 'animate-slide-left' : 'opacity-0'
-          }`}>
+          <div className="flex justify-center order-1 md:order-2 mb-6 md:mb-0">
             <div className="w-24 h-24 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 border-blue-500">
               <img src={`${process.env.PUBLIC_URL}/Bigger size.jpg`} alt="Profile" className="w-full h-full object-cover" />
             </div>
@@ -566,9 +455,7 @@ export default function PersonalWebsite() {
         </div>
         
         {/* Achievement Highlights */}
-        <div className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6 ${
-          textAnimation.numbers ? 'animate-slide-bottom' : 'opacity-0'
-        }`}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
           <div className={`p-3 sm:p-5 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'} transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}> 
             <div className="text-lg sm:text-3xl font-bold text-blue-500 mb-1 sm:mb-2">{counters.projects}+</div>
             <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2">Projects Completed</h3>
@@ -589,9 +476,7 @@ export default function PersonalWebsite() {
         </div>
         
         {/* Learn More Button */}
-        <div className={`flex justify-center mt-6 sm:mt-12 mb-0 ${
-          textAnimation.numbers ? 'animate-slide-bottom' : 'opacity-0'
-        }`}>
+        <div className="flex justify-center mt-6 sm:mt-12 mb-0">
           <button 
             onClick={() => navigateTo('about')} 
             className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
@@ -867,7 +752,7 @@ export default function PersonalWebsite() {
         <div className="mt-12 flex justify-center">
           <button 
             onClick={() => navigateTo('teaching')} 
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
           >
             View My Teaching Experience <ChevronRight size={20} />
           </button>
@@ -927,7 +812,7 @@ export default function PersonalWebsite() {
         <div className="mt-8 sm:mt-12 flex justify-center">
           <button 
             onClick={() => navigateTo('contact')} 
-            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white`}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
           >
             Contact Me <ChevronRight size={16} className="sm:w-5 sm:h-5" />
           </button>
