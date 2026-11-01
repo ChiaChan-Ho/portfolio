@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Github, Linkedin, Mail, FileText, ExternalLink, Moon, Sun, ChevronRight } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Github, Linkedin, Mail, FileText, Moon, Sun, ChevronRight } from "lucide-react";
 import { animateValues } from "./animationUtils";
 import "./animations.css"; // Import the animations CSS file
 
@@ -14,7 +14,7 @@ export default function PersonalWebsite() {
     students: 0,
     skills: 0
   });
-  const [skillLevels, setSkillLevels] = useState({
+  const [, setSkillLevels] = useState({
     python: 0,
     java: 0,
     sql: 0,
@@ -29,7 +29,7 @@ export default function PersonalWebsite() {
   const counterAnimationRef = useRef(null);
   const skillAnimationRef = useRef(null);
   
-  const targetSkillLevels = {
+  const targetSkillLevels = useMemo(() => ({
     python: 95,
     java: 80,
     sql: 70,
@@ -38,13 +38,13 @@ export default function PersonalWebsite() {
     html: 50,
     matlab: 50,
     css: 50
-  };
+  }), []);
 
-  const targetCounters = {
+  const targetCounters = useMemo(() => ({
     projects: 3,
     students: 2000,
     skills: 10
-  };
+  }), []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -97,7 +97,7 @@ export default function PersonalWebsite() {
         skills: 0
       });
     }
-  }, [currentPage, isPageChanging]);
+  }, [currentPage, isPageChanging, targetCounters]);
 
   // Animation for skill bars
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function PersonalWebsite() {
         }
       };
     }
-  }, [currentPage]);
+  }, [currentPage, targetSkillLevels]);
 
   // Resume data
   const personalInfo = {
@@ -133,27 +133,6 @@ export default function PersonalWebsite() {
     github: "github.com/chiachan-ho",
     location: "San Diego, CA"
   };
-
-  const education = [
-    {
-      institution: "University of Pennsylvania",
-      location: "Philadelphia",
-      degree: "Master of Science in Engineering in",
-      program: "Systems Engineering",
-      period: "Expected Dec 2027"
-    },
-    {
-      institution: "University of California, San Diego",
-      location: "San Diego, CA",
-      degree: "Bachelor of Arts in",
-      program: "International Business",
-      minor: "Minor in Data Science",
-      period: "Sep 2022 - Jun 2025",
-      gpa: "3.85/4.0",
-      honors: "Provost Honors in Fall 2022, Winter 2023, Fall 2023, Winter 2024, and Spring 2024",
-      relevantCourses: "Data Structure and Algorithms, Machine Learning, Data Manipulation and Visualization, Linear Algebra"
-    }
-  ];
 
   const experiences = [
     {
@@ -206,73 +185,6 @@ export default function PersonalWebsite() {
       link: "https://dsc-courses.github.io/bpd-reference/docs/documentation/Functions/Writing%20Functions"
     }
   ];
-
-  const workExperience = [
-    {
-      company: "Halıcıoğlu Data Science Institute at UC San Diego",
-      location: "San Diego, CA",
-      title: "DSC10/DSC20 Course Instructional Assistant",
-      period: "Sep 2023 - Aug 2024",
-      description: [
-        "Utilized Python to clarify complex concepts, foster engagement, and facilitate comprehensive learning experiences during weekly discussions and office hours.",
-        "Collaborated with faculty to refine course content and assess student work, providing feedback to drive improvement.",
-        "Guided students through complex data science problems, encouraging critical thinking and fostering a deeper understanding of data science principles."
-      ]
-    },
-    {
-      company: "Roshow Group",
-      location: "Zhejiang, China",
-      title: "Software Engineer Intern (remote)",
-      period: "May 2024 - Aug 2024",
-      description: [
-        "Collaborated in project design and development, coding and testing, and technical documentation and project reports.",
-        "Participated in multiple projects on AI and cloud computing, assisting in development and testing phases to ensure that technical solutions efficiently meet business requirements.",
-        "Participated in the development of an internal generative AI platform to support text summarization and topic extraction requests for over 200 engineers, enhancing cross-functional collaboration."
-      ]
-    }
-  ];
-
-  const teaching = {
-    title: "Course Instructional Assistant",
-    company: "Halıcıoğlu Data Science Institute at UC San Diego",
-    location: "San Diego, CA",
-    period: "Sep 2023 - Aug 2024",
-    courses: [
-      {
-        code: "DSC 10",
-        title: "Principles of Data Science",
-        description: "Introductory course covering Python programming, data manipulation, visualization, and basic statistical concepts.",
-        responsibilities: [
-          "Led weekly discussion sections of 30+ students, explaining foundational Python concepts and data analysis techniques",
-          "Held regular office hours to provide personalized support on assignments and projects",
-          "Assisted in developing and grading course materials, including homework assignments and exams"
-        ]
-      },
-      {
-        code: "DSC 20",
-        title: "Programming and Basic Data Structures for Data Science",
-        description: "Intermediate programming course focused on data structures, algorithms, and object-oriented programming in Python.",
-        responsibilities: [
-          "Guided students through complex data structure implementations and algorithmic problem-solving",
-          "Provided detailed feedback on programming assignments to improve coding practices",
-          "Collaborated with faculty to enhance curriculum and teaching methodologies"
-        ]
-      }
-    ],
-    highlights: [
-      "Utilized Python to clarify complex concepts, foster engagement, and facilitate comprehensive learning experiences during weekly discussions and office hours.",
-      "Collaborated with faculty to refine course content and assess student work, providing feedback to drive improvement.",
-      "Guided students through complex data science problems, encouraging critical thinking and fostering a deeper understanding of data science principles."
-    ]
-  };
-
-  const skills = {
-    "Data Science & Programming": "Python with experience in data structure and libraries such as NumPy, Pandas, Scikit-learn, BeautifulSoup, and Matplotlib for effective data manipulation, cleaning, visualization, and executing a variety of hypothesis tests; Java, HTML, SQL, Tableau, MATLAB",
-    "Software Familiarity": "MS Office Suite (Word, PowerPoint, Excel, Power BI)",
-    "Languages": "English (language of college education), Japanese (JLPT N2 certified), Mandarin and Taiwanese (Native)"
-  };
-
-  const interests = ["Guitar", "Piano", "Listening to Music", "Video games", "Skiing", "Sports"];
 
   const aboutMe = {
     coverLetter: `Master's student at the University of Pennsylvania studying Systems Engineering, with a strong foundation in Data Science and International Business from my undergraduate studies at UC San Diego. I'm passionate about software development, AI, and machine learning, and I strive to apply these technologies to solve real-world engineering and commercial challenges.`,
@@ -592,6 +504,102 @@ export default function PersonalWebsite() {
     </section>
   );
 
+  // Resume data (resume tab only; keep other pages untouched)
+  const resumePersonalInfo = {
+    name: "Henry (ChiaChan) Ho",
+    email: "henryho534@gmail.com",
+    phone: "+1 (619) 381-2706",
+    linkedin: "www.linkedin.com/in/chiachan-ho",
+    statusLine: "U.S. Permanent Resident (Green Card Holder) – No sponsorship required"
+  };
+
+  const resumeTechnicalSkills = {
+    programmingLanguages: "Python, Java, SQL, JavaScript, HTML, MATLAB",
+    tools: "Git, Jupyter, AWS, Vercel, Docker, CI/CD, Pytest, Junit",
+    librariesFrameworks: "NumPy, Pandas, FastAPI, PyTorch, PostgreSQL, RestfulAPI, RLHF, MongoDB, NoSQL, Scikit-learn, React, Node.js, Flask"
+  };
+
+  const resumeEducation = [
+    {
+      institution: "University of Pennsylvania",
+      period: "Expected May 2027",
+      degree: "Master of Science in Engineering in Data Science and Artificial Intelligence",
+      gpa: "4.0/4.0",
+      relevantCoursework: "Database & Information Systems, Applied Machine Learning, Graph Neural Network"
+    },
+    {
+      institution: "University of California, San Diego",
+      period: "Sep 2022 – Jun 2025",
+      degree: "Bachelor of Arts in International Business, Minor in Data Science",
+      gpa: "3.85/4.0",
+      provostHonors: "Fall 2022 – Spring 2024 (5 quarters)",
+      relevantCoursework: "Data Structures & Algorithms, Probabilistic Modeling & Machine Learning, Data Management & Analysis"
+    }
+  ];
+
+  const resumeExperience = [
+    {
+      role: "Data Science Intern",
+      organization: "(TSMC) Taiwan Semiconductor Manufacturing Company Limited – Hsinchu, Taiwan",
+      period: "Jun 2026 – Aug 2026",
+      description: [
+        "Built and deployed a full-stack training-analytics platform now used by 23 L&D staff to track NT$150M in annual training budget across 3,500+ courses per year, by independently developing Python data cleaning pipelines, backend services, and an interactive dashboard.",
+        "Restored reliability of the department's pre-class notification system, saving an estimated 911.7 hours (≈0.44 FTE) per year across 13 staff, by fixing four core functions — notification date logic, automated link retrieval, multi-day course templating, and individual-mode delivery.",
+        "Built an automated, data-driven course-scheduling tool that replaced ad-hoc, experience-based scheduling decisions, ensuring adequate course availability for TSMC's 90,000+ employees and supporting execution of the department's NT$150M annual training budget."
+      ]
+    },
+    {
+      role: "Software Development Engineer",
+      organization: "Perelman School of Medicine, University of Pennsylvania",
+      period: "Dec 2025 – Jun 2026",
+      description: [
+        "Developed and maintained 10+ RESTful API endpoints for the TissueLab platform, supporting AI-driven whole-slide pathology image analysis workflows and data management.",
+        "Designed a low-code interface builder enabling non-engineers to modularly customize AI model panels via drag-and-drop, and resolved 10+ bugs across backend and frontend systems to improve platform stability and usability."
+      ]
+    },
+    {
+      role: "AI Research Fellow",
+      organization: "Handshake AI Solutions LLC – Remote (Philadelphia, PA)",
+      period: "Sep 2025 – Nov 2025",
+      description: [
+        "Designed 20+ multimodal reasoning tasks (text + images) applying RLHF, uncovering consistent LLM weaknesses in interpreting hand-drawn diagrams — particularly tree/graph structures and distance-estimation problems.",
+        "Evaluated 60+ model responses across 20+ cases, achieving a 90+% first-pass quality rate, and translated identified failure patterns into structured feedback for model refinement."
+      ]
+    },
+    {
+      role: "Data Science Instructional Assistant",
+      organization: "Halicioglu Data Science Institute – San Diego, CA",
+      period: "Sep 2023 – Aug 2024",
+      description: [
+        "Taught data science fundamentals to 300+ students and provided 1-on-1 debugging guidance to 100+ students, breaking down core concepts into runnable Python examples and walking through code line-by-line.",
+        "Identified common pain points in student code submissions and collaborated with faculty to redesign assignments, reducing conceptual confusion by over 20%, as reflected in mid-term score improvements."
+      ]
+    }
+  ];
+
+  const resumeProjects = [
+    {
+      title: "IdealNest — ZIP-Code-Level U.S. Housing Affordability Web App",
+      location: "University of Pennsylvania – Philadelphia, PA",
+      period: "Jan 2026 – May 2026",
+      description: [
+        "Built IdealNest, a full-stack web app for exploring U.S. ZIP-code-level housing and neighborhood data, with a FastAPI backend on PostgreSQL (AWS RDS) and a React (Vite, PrimeReact) frontend, deployed on Vercel.",
+        "Implemented a flexible ZIP-search interface covering 10,000+ ZIP codes, with debounced slider- and text-based filtering, four preset \"recommended search\" queries, and per-ZIP detail drill-down pages.",
+        "Designed the SQL schema and query layer over 200K+ rows of integrated real estate, IRS income, and education data, optimizing query performance by 15%+ through indexing and schema refinements."
+      ]
+    },
+    {
+      title: "League of Legends Playing Style Analysis",
+      link: "https://chiachan-ho.github.io/LPL-v-LCK/",
+      location: "San Diego, CA",
+      period: "Mar 2024 – Jun 2024",
+      description: [
+        "Engineered a data pipeline in Python using Pandas and NumPy to process 10,000+ professional League of Legends matches, extracting game-level features (e.g., DPM, CKPM) to represent play styles.",
+        "Built and tuned Decision Tree and Random Forest classification pipelines to predict league from in-game aggressiveness features, confirming statistically significant regional playstyle differences (p < 0.05) through permutation-based hypothesis testing and fairness evaluation."
+      ]
+    }
+  ];
+
   // Resume page
   const ResumePage = () => (
     <section className={`min-h-screen px-2 sm:px-6 pt-24 sm:pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
@@ -608,124 +616,75 @@ export default function PersonalWebsite() {
         
         <div className={`p-8 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50 shadow-md'}`}>
           <div className="mb-6 text-center">
-            <h3 className="text-3xl font-bold mb-2">{personalInfo.name}</h3>
-            <div className="flex justify-center gap-2 flex-wrap">
-              <a href={`mailto:${personalInfo.email}`} className="text-blue-600 hover:underline">
-                {personalInfo.email}
+            <h3 className="text-3xl font-bold mb-2">{resumePersonalInfo.name}</h3>
+            <p className={`mt-1 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{resumePersonalInfo.statusLine}</p>
+            <div className="flex justify-center gap-2 flex-wrap mt-2">
+              <a href={`mailto:${resumePersonalInfo.email}`} className="text-blue-600 hover:underline">
+                {resumePersonalInfo.email}
               </a>
               <span>|</span>
-              <span>{personalInfo.phone}</span>
+              <span>{resumePersonalInfo.phone}</span>
               <span>|</span>
-              <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                {personalInfo.linkedin}
+              <a href={`https://${resumePersonalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                {resumePersonalInfo.linkedin}
               </a>
             </div>
           </div>
-          
+
           <hr className="border-t border-gray-300 dark:border-gray-600 my-6" />
-          
+
+          {/* Technical Skills */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4">Technical Skills</h2>
+            <div className="space-y-4">
+              <p><span className="font-bold">Programming Languages:</span> {resumeTechnicalSkills.programmingLanguages}</p>
+              <p><span className="font-bold">Tools:</span> {resumeTechnicalSkills.tools}</p>
+              <p><span className="font-bold">Libraries/Frameworks:</span> {resumeTechnicalSkills.librariesFrameworks}</p>
+            </div>
+          </div>
+
+          <hr className="border-t border-gray-300 dark:border-gray-600 my-6" />
+
           {/* Education */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-4">EDUCATION</h2>
+            <h2 className="text-2xl font-bold mb-4">Education</h2>
             <div className="space-y-6">
-              {education.map((edu, index) => (
+              {resumeEducation.map((edu, index) => (
                 <div key={index} className="mb-4">
                   <div className="flex justify-between mb-1">
-                    <h3 className="font-bold">{edu.institution}, {edu.location}</h3>
+                    <h3 className="font-bold">{edu.institution}</h3>
                     <div className="text-right shrink-0">
                       <p>{edu.period}</p>
                     </div>
                   </div>
                   <p>
-                    <span className="italic">{edu.degree}</span> {edu.program}
-                    {edu.minor && (
-                      <span>, <span className="italic">Minor in</span> {edu.minor.replace("Minor in", "")}</span>
-                    )}
-                    {edu.gpa && <span className="float-right">GPA: {edu.gpa}</span>}
+                    <span className="italic">{edu.degree}</span> GPA: {edu.gpa}
                   </p>
-                  {edu.honors && (
-                    <p className="mt-1"><span className="italic">Honors:</span> {edu.honors}</p>
+                  {edu.provostHonors && (
+                    <p className="mt-1"><span className="italic">Provost Honors:</span> {edu.provostHonors}</p>
                   )}
-                  {edu.relevantCourses && (
-                    <p className="mt-1"><span className="italic">Relevant Courses:</span> {edu.relevantCourses}</p>
+                  {edu.relevantCoursework && (
+                    <p className="mt-1"><span className="italic">Relevant Coursework:</span> {edu.relevantCoursework}</p>
                   )}
                 </div>
               ))}
             </div>
           </div>
-          
+
           <hr className="border-t border-gray-300 dark:border-gray-600 my-6" />
-          
-          {/* Projects */}
+
+          {/* Experience */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-4">PROJECTS & EXPERIENCE</h2>
-            <div className="space-y-6">
-              {experiences.map((exp, index) => (
-                <div key={index} className="mb-6">
-                  <div className="flex justify-between mb-1">
-                    <h3 className="font-bold">{exp.title}, {exp.location}</h3>
-                    <div className="text-right shrink-0">
-                      <p>{exp.period}</p>
-                    </div>
-                  </div>
-                  {exp.tutors && (
-                    <p className="mb-2"><span className="italic">Tutor:</span> {exp.tutors}</p>
-                  )}
-                  <ul className="list-disc pl-8 space-y-2">
-                    {exp.resumeDescription.map((item, i) => (
-                      <li key={i}>
-                        {item.includes("project's website") ? (
-                          <span>
-                            {item.split("project's website")[0]}
-                            <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              project's website
-                            </a>
-                            {item.split("project's website")[1] || "."}
-                          </span>
-                        ) : item.includes("educational website") ? (
-                          <span>
-                            {item.split("educational website")[0]}
-                            <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              educational website
-                            </a>
-                            {item.split("educational website")[1] || "."}
-                          </span>
-                        ) : item.includes("documentation") && index === 2 ? (
-                          <span>
-                            {item.split("documentation")[0]}
-                            <a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              documentation
-                            </a>
-                            {item.split("documentation")[1] || "."}
-                          </span>
-                        ) : (
-                          item
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Teaching & Work Experience */}
-          <div className="mb-6">
-            {workExperience.map((work, index) => (
+            <h2 className="text-2xl font-bold mb-4">Experience</h2>
+            {resumeExperience.map((work, index) => (
               <div key={index} className="mb-8">
-                <div className="flex justify-between mb-1">
-                  <h3 className="font-bold">{work.company}</h3>
-                  <div className="text-right shrink-0">
-                    <p>{work.location}</p>
+                <div className="flex justify-between items-start gap-4 mb-2">
+                  <div className="min-w-0 whitespace-normal break-words">
+                    <span className="font-bold">{work.role}</span>{" "}
+                    <span className="font-normal">{work.organization}</span>
                   </div>
+                  <p className="shrink-0 text-right whitespace-nowrap font-normal">{work.period}</p>
                 </div>
-                <div className="flex justify-between mb-2">
-                  <p className="italic">{work.title}</p>
-                  <div className="text-right shrink-0">
-                    <p>{work.period}</p>
-                  </div>
-                </div>
-                
                 <ul className="list-disc pl-8 space-y-2">
                   {work.description.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -734,28 +693,36 @@ export default function PersonalWebsite() {
               </div>
             ))}
           </div>
-          
-          <hr className="border-t border-gray-300 dark:border-gray-600 my-6" />
-          
-          {/* Skills */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-4">SKILLS & INTERESTS</h2>
-            <ul className="list-disc pl-8 space-y-2">
-              <li><span className="font-bold">Data Science & Programming:</span> Python (NumPy, Pandas, Scikit-learn), Java, SQL, JavaScript, CSS, HTML, C++, MATLAB</li>
-              <li><span className="font-bold">Software Familiarity:</span> MS Office Suite (Word, PowerPoint, Excel, Power BI)</li>
-              <li><span className="font-bold">Languages:</span> English (language of college education), Japanese (JLPT N2 certified), Mandarin and Taiwanese (Native)</li>
-              <li><span className="font-bold">Interests:</span> Guitar, Piano, Listening to Music, Video games, Skiing, Sports</li>
-            </ul>
-          </div>
-        </div>
 
-        <div className="mt-12 flex justify-center">
-          <button 
-            onClick={() => navigateTo('teaching')} 
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg ${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white transform transition-all duration-300 hover:scale-105 hover:shadow-lg`}
-          >
-            View My Teaching Experience <ChevronRight size={20} />
-          </button>
+          <hr className="border-t border-gray-300 dark:border-gray-600 my-6" />
+
+          {/* Projects */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4">Projects</h2>
+            <div className="space-y-6">
+              {resumeProjects.map((exp, index) => (
+                <div key={index} className="mb-6">
+                  <div className="flex justify-between items-start gap-4 mb-2">
+                    <div className="min-w-0 whitespace-normal break-words">
+                      <span className="font-bold">{exp.title}</span>{" "}
+                      {exp.link && (
+                        <span className="font-normal">
+                          (<a href={exp.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a>)
+                        </span>
+                      )}{" "}
+                      <span className="font-normal">- {exp.location}</span>
+                    </div>
+                    <p className="shrink-0 text-right whitespace-nowrap font-normal">{exp.period}</p>
+                  </div>
+                  <ul className="list-disc pl-8 space-y-2">
+                    {exp.description.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
