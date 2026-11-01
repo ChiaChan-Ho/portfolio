@@ -62,7 +62,16 @@ export default function Hero() {
         setPhase("enter");
     };
 
-    const { status, dotColor } = getStatus();
+    // getStatus() depends on the current time, which differs between the
+    // statically-prerendered server HTML (frozen at build time) and the
+    // client's real clock at hydration — computing it directly during
+    // render caused a React hydration mismatch in production. Defer it to
+    // an effect so server and first client render agree, then correct it
+    // right after mount.
+    const [{ status, dotColor }, setStatusState] = useState(() => ({ status: "Available", dotColor: "green" }));
+    useEffect(() => {
+        setStatusState(getStatus());
+    }, []);
 
     const handleIconClick = (iconName: string) => {
         setWiggleIcon(iconName);
@@ -95,6 +104,7 @@ export default function Hero() {
                                     alt="Profile Picture"
                                     priority
                                     fill
+                                    sizes="(min-width: 640px) 80px, 64px"
                                     className="absolute rounded-full object-cover object-top"
                                 />
                             </BackgroundGradient>
