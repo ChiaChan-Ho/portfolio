@@ -20,6 +20,7 @@ import {
     IconSun,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { scrollToSection } from "@/lib/scroll-to-section";
 
 export const PALETTE_OPEN_EVENT = "palette:open";
 
@@ -95,13 +96,7 @@ export function CommandPalette() {
 
     const goToSection = useCallback(
         (id: string) => {
-            if (window.location.pathname !== "/") {
-                router.push(`/#${id}`);
-                return;
-            }
-            document
-                .getElementById(id)
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            scrollToSection(id, router);
         },
         [router],
     );

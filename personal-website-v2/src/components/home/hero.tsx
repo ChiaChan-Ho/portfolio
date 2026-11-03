@@ -24,10 +24,13 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { data } from "@/data/data";
+import { useTransitionRouter } from "next-view-transitions";
+import { scrollToSection } from "@/lib/scroll-to-section";
 
 
 export default function Hero() {
 
+    const router = useTransitionRouter();
     const [wiggleIcon, setWiggleIcon] = useState<string | null>(null);
 
     // State machine for the animated name. Lifted to Hero so the layout-animated
@@ -157,6 +160,10 @@ export default function Hero() {
                                         ref={ctaRef}
                                         onMouseMove={handleCtaMove}
                                         href="#projects"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            scrollToSection("projects", router);
+                                        }}
                                         className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-zinc-300/60 dark:border-zinc-700/60 bg-background/40 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-secondary-foreground transition-colors hover:text-foreground"
                                     >
                                         <span

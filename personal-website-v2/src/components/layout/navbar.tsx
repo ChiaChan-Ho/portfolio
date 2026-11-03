@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { AnimatedLogo } from "../ui/logo-animation"
 import { useTransitionRouter } from "next-view-transitions";
 import { CommandPaletteButton } from "../command-palette/command-palette-button";
+import { scrollToSection } from "@/lib/scroll-to-section";
 // import Link from "next/link";
 // import Image from "next/image";
 
@@ -62,14 +63,7 @@ export const Navbar = ({
       router.push(link);
       return;
     }
-    if (window.location.pathname !== "/") {
-      router.push(`/#${link}`);
-      return;
-    }
-    const section = document.getElementById(link);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToSection(link, router);
   };
 
   const handleLogoClick = () => {

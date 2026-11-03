@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { AnimatedLogo } from "@/components/ui/logo-animation";
 import { data } from "@/data/data";
+import { scrollToSection } from "@/lib/scroll-to-section";
 
 export const Footer = () => {
     const [sent, setSent] = useState(false);
@@ -40,14 +41,7 @@ export const Footer = () => {
             router.push(link);
             return;
         }
-        if (window.location.pathname !== "/") {
-            router.push(`/#${link}`);
-            return;
-        }
-        const section = document.getElementById(link);
-        if (section) {
-            section.scrollIntoView({ behavior: "smooth" });
-        }
+        scrollToSection(link, router);
     };
 
     const handleLogoClick = () => router.push("/");
