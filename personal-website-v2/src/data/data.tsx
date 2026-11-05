@@ -69,7 +69,7 @@ export const data = {
   projects: [
     {
       title: "League of Legends Playing Style Analysis",
-      href: "https://chiachan-ho.github.io/LPL-v-LCK/",
+      href: "https://chiachan-ho.github.io/LPL-vs-LCK/",
       dates: "Mar 2024 - Jun 2024",
       active: false,
       type: "Data Science",
